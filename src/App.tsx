@@ -1,33 +1,65 @@
-import { useState } from 'react'
-import reactLogo from './assets/react.svg'
-import viteLogo from '/vite.svg'
 import './App.css'
+import React, { useState, useEffect } from 'react';
+import confetti from 'canvas-confetti';
 
 function App() {
-  const [count, setCount] = useState(0)
+  const [position, setPosition] = useState({ left: "calc(85% - 100px)", top: "100px" });
+  const [correctAnswer] = useState("Absolutamente si")
+  const [incorrectAnswer] = useState("Claramente no")
+  const [showTooltip, setShowTooltip] = useState(false);
+
+  useEffect(() => {
+    const moveRandomly = () => {
+      const left = (Math.random() * (window.innerWidth - 100)).toString() + "px";
+      const top = (Math.random() * (window.innerHeight - 40)).toString() + "px";
+      setPosition({ left, top });
+    };
+
+    const button = document.getElementById('movableButton');
+
+    if (button) {
+      button.addEventListener('mouseover', moveRandomly);
+    }
+
+    if (button) {
+      button.addEventListener('touchstart', moveRandomly);
+    }
+
+    if (button) {
+      button.addEventListener('click', moveRandomly);
+    }
+
+    return () => {
+      if (button) {
+        button.removeEventListener('mouseover', moveRandomly);
+      }
+    };
+  }, []);
+
+  const handleButtonClick = () => {
+    setShowTooltip(true)
+    confetti();
+  };
 
   return (
     <>
-      <div>
-        <a href="https://vitejs.dev" target="_blank">
-          <img src={viteLogo} className="logo" alt="Vite logo" />
-        </a>
-        <a href="https://react.dev" target="_blank">
-          <img src={reactLogo} className="logo react" alt="React logo" />
-        </a>
+      <div className='body'>
+        <div className='title'>
+          <h1>Me amas?</h1>
+        </div>
+        <div className='container'>
+          <button style={{ position: 'absolute', left: `calc(10% - 25px)`, top: `100px` }} onClick={handleButtonClick}>{correctAnswer}</button>
+          <button id='movableButton'
+            style={{ position: 'absolute', left: `${position.left}`, top: `${position.top}` }}>{incorrectAnswer}</button>
+        </div>
+        {showTooltip && (
+        <div className="tooltip">
+          <h1>Yo tambien te amo mucho</h1>
+          <h1>Muak </h1>
+        </div>
+      )}
       </div>
-      <h1>Vite + React</h1>
-      <div className="card">
-        <button onClick={() => setCount((count) => count + 1)}>
-          count is {count}
-        </button>
-        <p>
-          Edit <code>src/App.tsx</code> and save to test HMR
-        </p>
-      </div>
-      <p className="read-the-docs">
-        Click on the Vite and React logos to learn more
-      </p>
+      
     </>
   )
 }
